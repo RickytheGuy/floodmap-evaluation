@@ -17,7 +17,7 @@ gdal.UseExceptions()
 
 floodmap_file = '/Users/ricky/Documents/arfs_sample/output/USGS_1_n40w111_20240130_buff__flood.tif'
 boundary_file = '/Users/ricky/Documents/streamstats/boundary.shp'
-boundary_file = None
+# boundary_file = None
 # reference_floodmap_file = '/Users/ricky/Downloads/10_4231_R71V5BZ5/UT/UT_SFM.shp'
 reference_floodmap_file = '/Users/ricky/Downloads/10_4231_R71V5BZ5/true_raster.tif'
 output_file = 'test.tif'
@@ -291,18 +291,25 @@ def main():
     tp, tn, fp, fn = loop_assign(output_array, flood_array, ref_array, mask)
 
     pc = (tp+tn)/(tp+tn+fp+fn)
+    b = (tp+fp)/(tp+fn)
+    h = tp/(tp+fn)
     n = nrows*ncols
-    k = (n*(tp+tn) -( (tp+fp)*(tp+fn) + (fp+tn)*(fn+tn)))/((n**2)- ((tp+fp)*(tp+fn) + (fp+tn)*(fn+tn)))
+    k = (n*(tp+tn) - ((tp+fp)*(tp+fn) + (fp+tn)*(fn+tn)))/((n**2) - ((tp+fp)*(tp+fn) + (fp+tn)*(fn+tn)))
     f = tp / (tp + fp + fn)
 
     # Print error matrix
-    print(f"True Positives: {format_number(tp)}")
+    print(f"\nTrue Positives: {format_number(tp)}")
     print(f"True Negatives: {format_number(tn)}")
     print(f"False Positives: {format_number(fp)}")
     print(f"False Negatives: {format_number(fn)}\n")
-    print(f"Proportion Correct: {pc:.3f}")
-    print(f"Kappa: {k:.3f}")
-    print(f"Fitness-statistic: {f:.3f}")
+
+    print("Performance Indicators (1 = Perfect):")
+    print("-" * 30)
+    print(f"Proportion Correct:\t{pc:.3f}")
+    print(f"Bias:\t\t\t{b:.3f}")
+    print(f"Hit Rate:\t\t{h:.3f}")
+    print(f"Kappa:\t\t\t{k:.3f}")
+    print(f"Fitness-statistic:\t{f:.3f}\n")
 
     if not output_file:
         return
